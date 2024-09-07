@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define CAR_ID_LENGTH 20
+#define CAR_ID_LENGTH 100
 #define MAX_CARS 10
 
 //Node Structure for the Queue
@@ -47,6 +47,7 @@ void freeQueue();
 void freeHistory(struct Node* history);
 void stringToLower(char* action);
 void freeString(char* string);
+int isStringEmptyOrWhitespace(const char *str);
 
 struct Node* head = NULL;
 
@@ -57,9 +58,9 @@ int main(){
     initializeCarStack(&car_stack);
     int isAdded;
 
-    enqueue(first_rear, "push", "Dino", "Honda1");
+    enqueue(first_rear, "push", "Dino", "Civic");
     enqueue(first_rear, "push", "Cyrano", "Honda2");
-    enqueue(first_rear, "push", "Dabon", "Honda3");
+    // enqueue(first_rear, "push", "Dabon", "Honda3");
     // enqueue(first_rear, "push", "Dino", "Honda");
     // enqueue(first_rear, "push", "Cyrano", "Honda");
     // enqueue(first_rear, "push", "Dabon", "Honda");
@@ -67,6 +68,7 @@ int main(){
     // enqueue(first_rear, "push", "Cyrano", "Honda");
     // enqueue(first_rear, "push", "Dabon", "Honda");
     // enqueue(first_rear, "push", "Dino", "Honda");
+    enqueue(first_rear, "pop", "Dino", "");
     enqueue(first_rear, "pop", "Cyrano", "");
     // enqueue(first_rear, "push", "Dino", "Honda");
     // enqueue(first_rear, "push", "Dino", "Honda");
@@ -74,7 +76,7 @@ int main(){
     history = dequeue(first_rear, &car_stack, history);
     history = dequeue(first_rear, &car_stack, history);
     history = dequeue(first_rear, &car_stack, history);
-    // history = dequeue(first_rear, &car_stack, history);
+    history = dequeue(first_rear, &car_stack, history);
     // history = dequeue(first_rear, &car_stack, history);
     // history = dequeue(first_rear, &car_stack, history);
     // history = dequeue(first_rear, &car_stack, history);
@@ -154,16 +156,33 @@ void stringToLower(char* action){
     }
 }
 
+//Checks if the string is just pure space or empty
+int isStringEmptyOrWhitespace(const char *str) {
+    int i;
+    for(i = 0; i < strlen(str); i++){
+        if (!isspace(str[i])) { // If a non-whitespace character is found
+            return 0; // The string is not empty or whitespace only
+        }
+    }
+    return 1; // The string is empty or contains only whitespace
+}
+
 // Adds a new action (rent or return) to the end of the queue. It
 // creates a new node, sets its action, customer name, and carId, and
 // updates the rear pointer
 void enqueue(Queue q, char *action, char *customerName, char *carId){
+    if(isStringEmptyOrWhitespace(carId) && strcmp(action, "push") == 0){
+        printf("Enter the Car ID\n");
+        return;
+    }
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+
     //Checks if memory allocation has failed
     if(newNode == NULL){
         printf("Stack is Full, cannot queue\n");
         return;
     }
+    
     strcpy(newNode->action, action);
     stringToLower(newNode->action);
     //Checks if the action is valid or not (push or pop)
