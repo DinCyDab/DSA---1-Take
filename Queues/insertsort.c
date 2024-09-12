@@ -16,17 +16,17 @@ void display(Node head);
 void freeQueue(Node head);
 void insertSort(Queue q, int data);
 Queue initializeQ();
-void enqueue(Queue q, int data);
+void enqueue(Queue q, Node data);
+void dequeue(Queue q);
 
 int main(){
     srand(time(NULL));
-    Node main = NULL;
     Queue q = initializeQ();
 
-    for(int i = 0; i < 10; i++){
-        insertSort(q, rand() % 10);
+    int i = 0;
+    for(i = 0; i < 10; i++){
+        insertSort(q, rand() % 10 + 1);
     }
-
 
     display(q->head);
     freeQueue(q->head);
@@ -35,79 +35,98 @@ int main(){
 }
 
 void insertSort(Queue q, int data){
-    if(q->head == NULL){
-        enqueue(q, data);
+    Node newNode = (Node)malloc(sizeof(struct node));
+    if(newNode == NULL){
+        printf("ERROR\n");
         return;
     }
 
-    Node newNode = (Node)malloc(sizeof(struct node));
-    Node tail_holder = q->tail;
     newNode->value = data;
     newNode->next = NULL;
-    
+
+    //Check for empty head
+    if(q->head == NULL){
+        q->head = newNode;
+        q->tail = newNode;
+        return;
+    }
+
+    //Check if the new data is bigger than the last value
+    //Just put it in the back
+    if(data > q->tail->value){
+        q->tail->next = newNode;
+        q->tail = newNode;
+        return;
+    }
+
     q->tail->next = newNode;
     q->tail = newNode;
 
-    if(tail_holder->value < newNode->value){
-        //No need to insert as the newNode value is greater than the last value
+    //If the data is lesser than the head value
+    //Enqueue all of the queue to the back
+    if(data < q->head->value){
+        Node current = q->head;
+        Node next = NULL;
+        while(current != newNode){
+            next = current->next;
+            enqueue(q, current);
+            dequeue(q);
+            current = next;
+        }
         return;
     }
 
-    Queue temp = initializeQ();
+    //If the data is in the middle of the queue
+    //Enqueue all of the front data
+    //It will stop if the current data is greater than the new data
     Node current = q->head;
     Node next = NULL;
-
-    while(newNode->value > current->value){
+    while(data > current->value){
         next = current->next;
-        if(temp->head == NULL){
-            temp->head = current;
-            temp->tail = current;
-        }
-        else{
-            // temp->tail->next = current;
-            temp->tail = current;
-        }
+        enqueue(q, current);
+        dequeue(q);
         current = next;
     }
 
-    //Double check
-    if(next == NULL){
-        newNode->next = current;
-        q->head = newNode;
-        tail_holder->next = NULL;
-        q->tail = tail_holder;
+    //Enqueue the new data
+    //Then enqueue all of the remaining data
+    enqueue(q, newNode);
+    while(current != newNode){
+        next = current->next;
+        enqueue(q, current);
+        dequeue(q);
+        current = next;
+    }
+
+    //The current data will stop when it finds the new node
+    //Dequeue for last time so that it won't have duplicate
+    dequeue(q);
+}
+
+//Simple enqueueing
+void enqueue(Queue q, Node data){
+    Node newNode = (Node)malloc(sizeof(struct node));
+    newNode->value = data->value;
+    newNode->next = NULL;
+    q->tail->next = newNode;
+    q->tail = newNode;
+}
+
+//Simple dequeueing
+void dequeue(Queue q){
+    if(q->head == NULL){
+        printf("ERROR\n");
         return;
     }
 
-    temp->tail->next = newNode;
-    newNode->next = next;
-    
-    if(next == tail_holder){
-        next->next = NULL;
-        q->tail = next;
-    }
+    Node current = q->head;
+    q->head = q->head->next;
 
-    //Double Check
-    tail_holder->next = NULL;
-
-
-    q->tail = tail_holder;
-
-    free(temp);
-}
-
-void enqueue(Queue q, int data){
-    Node newNode = (Node)malloc(sizeof(struct node));
-    newNode->value = data;
-    newNode->next = NULL;
     if(q->head == NULL){
-        q->head = newNode;
-        q->tail = newNode;
+        q->tail = NULL;
     }
-    else{
-        q->tail->next = newNode;
-        q->tail = newNode;
-    }
+
+    free(current);
 }
 
 Queue initializeQ(){
