@@ -24,18 +24,21 @@ void bogoSort(int* arr, int size){
             }
         }
         count++;
+        printf("%d\n", count);
     }
     printf("Count: %d\n", count);
 }
 
 int main(){
     srand(time(NULL));
-    int arr[] = {2,1,3,4,2,1,2,3,5,2,1,3};
+    int arr[] = {2,1,3,4,2,2,4,2,4,1,2};
     int size = sizeof(arr) / sizeof(arr[0]);
     bogoSort(arr, size);
+
     for(int i = 0; i < size; i++){
-        printf("%d", arr[i]);
+        printf("%d --> ", arr[i]);
     }
+    printf("NULL");
     // for(int i = 3; i > 0; i--){
     //     printf("%d\n",  rand() % i);
     // }
