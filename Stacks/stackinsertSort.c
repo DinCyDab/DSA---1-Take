@@ -27,6 +27,10 @@ int main(){
     insertSort(s, 4);
     insertSort(s, 3);
     insertSort(s, 2);
+    insertSort(s, 1);
+    insertSort(s, 4);
+    insertSort(s, 3);
+    insertSort(s, 2);
 
     printStack(s);
     freeStack(s);
