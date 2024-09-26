@@ -4,6 +4,8 @@
         "stdbool.h": "c",
         "stdlib.h": "c",
         "limits.h": "c",
-        "qllset.h": "c"
+        "qllset.h": "c",
+        "string.h": "c",
+        "stdio.h": "c"
     }
 }
